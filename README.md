@@ -1,20 +1,17 @@
 ##  Overview
-1. Install CKAN v2.0.4 from source. Directions below adapted from the [CKAN installation docs](http://docs.ckan.org/en/ckan-2.0/install-from-source.html).
+1. Install latest version of CKAN from source. Directions below adapted from the [CKAN installation docs](http://docs.ckan.org/en/ckan-2.0/install-from-source.html).
 2. Install Solr v4.6.0 
 3. Install Tomcat v7.0.42
 4. Install GeoServer v2.4.0.
 5. Build a PostGIS template database.
 6. Install CKAN extensions:
-  * [ckanext-datstorer](https://github.com/okfn/ckanext-datastorer)
   * [ckanext-spatial](https://github.com/okfn/ckanext-spatial)
-  * [ckanext-harvest](https://github.com/okfn/ckanext-harvest)
-  * [ckanext-importlib](https://github.com/okfn/ckanext-importlib)
 7. Install PyCSW.
 
 ## Detailed Instructions
 
 ### Linux Environment
-If you need to setup a Linux environment see [these](https://github.com/ngds/ckanext-ngds/wiki/Create-a-Linux-Virtual-Machine) instructions to use VirtualBox.
+The CKAN set up was done on Ubuntu 14.04 T2.Medium instance on AWS cloud.
 
 ### Base Updates
 
@@ -23,7 +20,7 @@ If you need to setup a Linux environment see [these](https://github.com/ngds/cka
 
 ### CKAN Prerequisites
 
-    $ sudo apt-get install python-dev postgresql-9.1-postgis libpq-dev python-pip python-virtualenv git-core openjdk-6-jdk
+    $ sudo apt-get install python-dev postgresql-9.3-postgis-2.1 libpq-dev python-pip python-virtualenv git-core openjdk-7-jdk
 
 These are straight from the [CKAN installation docs](http://docs.ckan.org/en/ckan-2.0/install-from-source.html), except `postgresql-9.1-postgis` was added since we'll need PostGIS for spatial functions.
 
@@ -52,24 +49,6 @@ Tomcat should be installed with apt-get so it automatically runs as a service.
 
     $ sudo apt-get install tomcat7 unzip
 
-If that works skip to the Install GeoServer section. If not follow below:
-
-    $ wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.tar.gz
-    $ tar xvzf apache-tomcat-7.0.42.tar.gz
-    $ sudo mv apache-tomcat-7.0.42 /var/lib/tomcat7
-    $ rm apache-tomcat-7.0.42.tar.gz
-    $ sudo nano ~/.bashrc
-
-Add this to the end of the _.bashrc_ file:
-
-    export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64
-    export CATALINA_HOME=/var/lib/tomcat7
-
-Restart the _.bashrc_ file and activate __Tomcat__:
-
-    $ . ~/.bashrc
-    $ $CATALINA_HOME/bin/startup.sh
-
 Verify that __Tomcat__ is running at __http://localhost:8080/__.
     
 ### Install GeoServer
@@ -87,8 +66,8 @@ Verify that __GeoServer__ is running at __http://localhost:8080/geoserver/__.
 
     $ sudo su postgres
     postgres $ createdb -E utf8 template_postgis
-    postgres $ psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
-    postgres $ psql -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+    postgres $ psql -d template_postgis -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql
+    postgres $ psql -d template_postgis -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql
     postgres $ psql -d template_postgis -c "GRANT ALL on geometry_columns to PUBLIC;"
     postgres $ psql -d template_postgis -c "GRANT ALL on geography_columns to PUBLIC;"
     postgres $ psql -d template_postgis -c "GRANT ALL on spatial_ref_sys to PUBLIC;"
@@ -127,7 +106,7 @@ Create a virutal environment and activate it. _Now Python packages installed wil
 
 Install __CKAN__ and its Python dependencies.
 
-    (ckanenv) $ pip install -e git+https://github.com/okfn/ckan.git@ckan-2.0.4#egg=ckan
+    (ckanenv) $ pip install -e git+https://github.com/okfn/ckan.git@ckan#egg=ckan
     (ckanenv) $ pip install -r src/ckan/pip-requirements.txt
     (ckanenv) $ pip install -r src/ckan/pip-requirements-test.txt
 
@@ -174,8 +153,8 @@ Build a database for the PyCSW server:
     
 Install PostGIS into PyCSW database
 
-    postgres $ psql -d ckan_pycsw -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
-    postgres $ psql -d ckan_pycsw -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+    postgres $ psql -d ckan_pycsw -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql
+    postgres $ psql -d ckan_pycsw -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql
     postgres $ psql -d ckan_user -c "GRANT ALL on geometry_columns to PUBLIC;"
     postgres $ psql -d ckan_user -c "GRANT ALL on geography_columns to PUBLIC;"
     postgres $ psql -d ckan_user -c "GRANT ALL on spatial_ref_sys to PUBLIC;"
@@ -275,7 +254,7 @@ Start Solr:
     (ckanenv) $ paster --plugin=ckan db init -c ~/ckanenv/src/ckan/test.ini
     (ckanenv) $ paster --plugin=ckan datastore set-permissions postgres -c ~/ckanenv/src/ckan/test.ini
 
-### Run NGDS-free CKAN
+### Run CKAN
 
 In a new terminal start Celery:  
 
@@ -290,13 +269,3 @@ In a new terminal start development.ini:
     (ckanenv) $ paster serve development.ini
 
 Verify that the site is being served at __http://localhost:5000/__. Try creating a dataset and uploading a CSV file to make sure that `datastorer` works.
-
-You can also run __CKAN's__ tests by:
-
-     (ckanenv) $ cd ~/ckanenv/src/ckan    
-     (ckanenv) $ nosetests --ckan --with-pylons=test.ini ckan
-
-I got 945 tests run, 48 skipped and 1 error.
-
-### Install NGDS CKAN
-Now it's [time to install the NGDS things](https://github.com/ngds/ckanext-ngds/wiki/Install-NGDS-CKAN).
