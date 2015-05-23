@@ -73,7 +73,7 @@ Verify that __GeoServer__ is running at __http://localhost:8080/geoserver/__.
 
 This template database should be used to create any new __PostGIS__-enabled database.
 
-### Install Some NGDS Dependencies
+### Install Some Geo-Spatial Dependencies
 
     $ sudo apt-get install rabbitmq-server gdal-bin build-essential libxml2-dev libxslt-dev
 
