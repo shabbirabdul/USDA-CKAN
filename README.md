@@ -5,7 +5,6 @@
 4. Install GeoServer v2.4.0.
 5. Build a PostGIS template database.
 6. Install CKAN extensions:
-  * [ckanext-spatial](https://github.com/okfn/ckanext-spatial)
 7. Install PyCSW.
 
 ## Detailed Instructions
@@ -21,8 +20,6 @@ The CKAN set up was done on Ubuntu 14.04 T2.Medium instance on AWS cloud.
 ### CKAN Prerequisites
 
     $ sudo apt-get install python-dev postgresql-9.3-postgis-2.1 libpq-dev python-pip python-virtualenv git-core openjdk-7-jdk
-
-These are straight from the [CKAN installation docs](http://docs.ckan.org/en/ckan-2.0/install-from-source.html), except `postgresql-9.1-postgis` was added since we'll need PostGIS for spatial functions.
 
 ### Install Solr
 
