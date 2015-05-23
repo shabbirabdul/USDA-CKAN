@@ -265,4 +265,4 @@ In a new terminal start development.ini:
     (ckanenv) $ cd ~/ckanenv/src/ckan
     (ckanenv) $ paster serve development.ini
 
-Verify that the site is being served at __http://localhost:5000/__. Try creating a dataset and uploading a CSV file to make sure that `datastorer` works.
+Verify that the site is being served at __http://localhost:5000/__. 
